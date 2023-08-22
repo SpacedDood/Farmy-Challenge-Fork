@@ -39,6 +39,14 @@ const getData = async (resource) => {
 
     console.log({data, resource, r: data[resource]})
 
+    if (resource[1] != null) {
+      //console.log(data[resource[0]])
+      let newItem = data[resource[0]].find(i => resource[1] == i.id);
+      if (newItem) {
+          resolve(newItem);
+      }
+    }
+
     resolve(resource && resource !== 'reset' ? data[resource] : data);
   });
 };
