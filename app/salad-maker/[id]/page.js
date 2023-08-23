@@ -1,7 +1,7 @@
 'use client'
 import styles from '../page.module.css'
 import { useState, useEffect, useRef } from 'react'
-import SaladMaker from "../SaladMaker";
+import SaladMaker from "../saladMaker";
 
 export const SaladMakerLoaderPage = ({params}, props) => {
 

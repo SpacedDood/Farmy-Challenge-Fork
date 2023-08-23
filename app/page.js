@@ -150,7 +150,7 @@ const SaladList = (props) => {
     <div className={styles.saladsList}>
       {loadedData.map((salad) => {
         return (
-          <div className={styles.flexbetween}>
+          <div key={salad.id} className={styles.flexbetween}>
             <p>{salad.name}</p>
             <a className={styles.btn} href={"/salad-maker/" + salad.id}>Edit</a>
           </div>
