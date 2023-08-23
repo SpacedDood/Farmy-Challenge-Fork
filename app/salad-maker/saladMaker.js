@@ -15,22 +15,125 @@ export const SaladMaker = (props) => {
   }
 
   const [saladData, setSaladData] = useState(baseSalad)
-  const [ingreData, setingreData] = useState(null)
+  const [ingreData, setIngreData] = useState(null)
+  const [bizData, setBizData] = useState(null)
   const [isLoading, setLoading] = useState(true)
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  const [ingredientsModalActive, setIngredientsModal] = useState(false)
+  const [typeModalActive, setTypeModal] = useState(false)
 
   useEffect(() => {
-    /*if (props.saladData != null) {
-      setSaladData(props.saladData)
-    }*/
+    const fetchData = async () => {
+      try {
+        const businessLogicResponse = await fetch('/api/businessLogic');
+        const businessLogicData = await businessLogicResponse.json();
+        setBizData(businessLogicData);
 
-    fetch('/api/ingredients')
-      .then((res) => res.json())
-      .then((data) => {
-        setingreData(data)
-        setLoading(false)
+        const ingredientsResponse = await fetch('/api/ingredients');
+        const ingredientsData = await ingredientsResponse.json();
+        setIngreData(ingredientsData);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setDataLoaded(true);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (dataLoaded && ingreData !== null) {
+      if (props.loadedData && props.loadedData !== null) {
+        parseLoadedSaladData(props.loadedData);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    }
+
+  }, [dataLoaded, ingreData, bizData])
+
+  if (isLoading)
+      return (<div className={styles.loading}>Loading...</div>)
+
+   /*I had refactored an entire ingredients component to sort out ingredients
+   and jazz, then I noticed the total cost, so I reverted it all */
+
+  function parseLoadedSaladData(newSaladData) {
+    //console.log("loading salad data")
+    //console.log(newSaladData)
+
+    let newSalad = {...saladData};
+
+    newSaladData.ingredients.forEach((item, i) => {
+      //console.log(item.id)
+      //console.log(ingreData)
+      let ingredientData = ingreData.find((ingredient) => ingredient.id == item.id);
+      ingredientData.count = item.numOfServings;
+      newSalad.ingredients.push(ingredientData);
+    });
+
+    newSalad.id = newSaladData.id;
+    newSalad.name = newSaladData.name;
+    newSalad.type = newSaladData.size;
+    newSalad.saladType = bizData.saladTypes[newSalad.type];
+
+    //TO-DO: PRICE TALLY?!
+
+    setSaladData(newSalad);
+    return true;
+  }
+
+  function saveSaladData() {
+
+    //console.log(saladData);
+
+    var prepDataBase = {
+        "name": saladData.name,
+        "id": saladData.id ? saladData.id : null,
+        "size": saladData.type,
+        "ingredients": [],
+        "cost": saladTotalCost(),
+        "targetStock": 0,
+        "currentStock": 0,
+        "price": 0
+    }
+
+    saladData.ingredients.forEach((item, i) => {
+      var newIngredient = {
+          "id": item.id,
+          "numOfServings": item.count
+        }
+
+      prepDataBase.ingredients.push(newIngredient);
+    });
+
+    //console.log(prepDataBase)
+
+    fetch('/api/salads', {
+        method: 'POST',
+        body: JSON.stringify(prepDataBase),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
       })
-  }, [])
+     .then((response) => response.json())
+     .then((data) => {
+        console.log(data);
+        alert("Successfully Saved!");
+        // Handle data
+        // REDIRECT
+        window.location.href = "/";
+     })
+     .catch((err) => {
+        console.log(err.message);
+        alert(err.message)
+     });
 
+  }
 
   function updateSaladName(newName) {
     let newSalad = {...saladData};
@@ -72,39 +175,12 @@ export const SaladMaker = (props) => {
   }
 
 
-  /* EXPECTED DATA PREP:
-
-  {
-    "name": "Example Salad",
-    "id": 1,
-    "size": "small",
-    "ingredients": [
-      {
-        "id": 1,
-        "numOfServings": 1
-      }
-    ],
-    "cost": 0.3,
-    "targetStock": 20,
-    "currentStock": 0,
-    "price": 0.33
-  }
-
-   */
-
-  function saveSaladData() {
-
-  }
-
-
-
   const saladTotalCost = () => {
     let totalCost = 0;
     saladData.ingredients.forEach((item, i) => {
-      console.log(item)
       totalCost += item.costPerServing * item.count;
     });
-    return totalCost;
+    return totalCost.toFixed(2);
   }
 
   const saladTotalWeight = () => {
@@ -121,11 +197,18 @@ export const SaladMaker = (props) => {
 
   return (
     <div className={styles.fullWidth}>
-      <div>
-        <EditTextField value={saladData.name} setValue={updateSaladName}/>
-        <br />
+      <div className={styles.details}>
         <div className={styles.flex}>
-          <p className={styles.flexfill}>Type: <span>{saladData.type}</span></p>
+          <div className={styles.flexfill}>
+            <EditTextField value={saladData.name} setValue={updateSaladName}/>
+          </div>
+          <div
+            className={styles.btn}
+            onClick={() => setTypeModal(true)}
+          >{saladData.type}</div>
+        </div>
+        <div className={styles.flex}>
+          <div className={styles.flexfill}></div>
           <p>
             <sub>Target Cost:</sub> <span>{moneyLabel(saladData.saladType.targetCost)}</span>
           </p>
@@ -133,17 +216,14 @@ export const SaladMaker = (props) => {
             <sub>Target Weight:</sub> <span>{saladData.saladType.targetWeight}g</span>
           </p>
         </div>
+        <div className={styles.flex}>
+          <div className={styles.flexfill}></div>
+          <p><sub>Total cost:</sub> {moneyLabel(saladTotalCost())}</p>
+          <p><sub>Total weight:</sub> {saladTotalWeight()}g</p>
+        </div>
       </div>
 
       <div>
-        <div className={styles.flex}>
-          <div className={styles.flexfill}>
-            <div className={styles.btn}>Change Type</div>
-          </div>
-          <p><sub>Total cost:</sub> {moneyLabel(saladTotalCost())}</p>
-          <p><sub>Total weight:</sub> {saladTotalWeight()}g</p>
-          <p></p>
-        </div>
 
         <div>
         {
@@ -151,13 +231,14 @@ export const SaladMaker = (props) => {
           ?
           (
             <div className={styles.ingredientDisp}>
-              Add some tasty ingredients!
+              <div className={styles.fullWidthCenter}>Add some tasty ingredients!</div>
             </div>
           )
           :
           (saladData["ingredients"].map((item, i)=>{
             return (
               <SaladIngredient
+                className={styles.ingredientEle}
                 key={i}
                 ingreNo={i}
                 ingredient={item}
@@ -169,20 +250,40 @@ export const SaladMaker = (props) => {
         }
         </div>
 
-        <div className={styles.btn}>+ ADD +</div>
+        <div className={styles.fullWidthCenter}>
+          <div
+            className={styles.btn}
+            onClick={() => setIngredientsModal(true)}
+          >+ ADD +</div>
+        </div>
 
       </div>
 
-      <SaladTypesList
-        updateSaladType={updateSaladType}
+
+      <QuickModal
+        title={"Salad Types"}
+        show={typeModalActive}
+        showComponent= {
+          <SaladTypesList
+            updateSaladType={updateSaladType}
+          />
+        }
+        closeModal={() => setTypeModal(false)}
       />
 
-      <SaladIngredientsList
-        addIngredientToSalad={addIngredientSalad}
+
+      <QuickModal
+        title={"Salad Ingredients"}
+        show={ingredientsModalActive}
+        showComponent= {
+          <SaladIngredientsList
+            addIngredientToSalad={addIngredientSalad}
+          />
+        }
+        closeModal={() => setIngredientsModal(false)}
       />
 
-      <div className={styles.flexbetween}>
-        <div className={styles.btn}>Cancel</div>
+      <div className={styles.bottomArea}>
         <div className={styles.btn} onClick={() => saveSaladData()}>Save</div>
       </div>
     </div>
@@ -193,19 +294,23 @@ export const SaladMaker = (props) => {
 
 const SaladIngredientsList = (props) => {
 
-  const [ingreData, setingreData] = useState(null)
+  const [ingreData, setIngreData] = useState(null)
   const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('/api/ingredients')
       .then((res) => res.json())
       .then((data) => {
-        setingreData(data)
+        setIngreData(data)
         setLoading(false)
       })
   }, [])
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return (
+    <div className={styles.center}>
+      <h1>Loading potatoes...</h1>
+    </div>
+  )
   if (!ingreData) return <p>No ingredient data</p>
 
   return (
@@ -312,8 +417,21 @@ const QuickModal = (props) => {
   if (props.show) {
     return (
       <div className={styles.quickModalWrap} >
+        <div
+          className={styles.quickModalBlur}
+          onClick={() => props.closeModal()}
+        />
         <div className={styles.quickModalCont} >
-          {props.showComponent}
+          <div className={styles.quickModalHeader}>
+            <div className={styles.quickModalTitle}>{props.title}</div>
+            <div
+              className={styles.quickModalClose}
+              onClick={() => props.closeModal()}
+            >X</div>
+          </div>
+          <div className={styles.quickModalBody}>
+            {props.showComponent}
+          </div>
         </div>
       </div>
     );
@@ -354,7 +472,7 @@ const EditTextField = (props) => {
   }
 
   function handleKeyPress(event) {
-    console.log(event.key)
+    //console.log(event.key)
 
     if (event.key === 'Enter') {
       toggleEdit();
@@ -373,17 +491,18 @@ const EditTextField = (props) => {
       <div className={styles.flex}>
         {
           !edit ?
-          (<h1>{props.value}</h1>)
+          (<h1 className={styles.titleText}>{props.value}</h1>)
           :
           (<input
               ref={inputRef}
+              className={styles.titleTextField}
               value={props.value}
               onChange={() => props.setValue(event.target.value)}
               onKeyPress={handleKeyPress}
           />)
         }
         <div className={styles.textFieldEdit}>
-          <sup onClick={toggleEdit}> {edit ? "Save" : "Edit"}</sup>
+          <p onClick={toggleEdit}> {edit ? "Save" : "Edit"}</p>
         </div>
       </div>
     </div>
@@ -392,7 +511,7 @@ const EditTextField = (props) => {
 
 
 const moneyLabel = (value) => {
-  return (value).toFixed(2) + "€";
+  return (Number(value)).toFixed(2) + "€";
 }
 
 export default SaladMaker;

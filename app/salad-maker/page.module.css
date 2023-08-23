@@ -11,6 +11,11 @@
   display: flex;
 }
 
+.flex p {
+  margin: 5px 1px;
+  padding: 5px 1px;
+}
+
 .flexfill {
   display: flex;
   flex-grow: 1;
@@ -19,6 +24,10 @@
 .flexbetween {
   display: flex;
   justify-content: space-between;
+}
+
+.details {
+  background: lightGrey;
 }
 
 .description {
@@ -33,10 +42,12 @@
 }
 
 .description a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
+  position: relative;
+  margin: 0;
+  padding: 1rem;
+  background-color: rgba(var(--callout-rgb), 0.5);
+  border: 1px solid rgba(var(--callout-border-rgb), 0.3);
+  border-radius: var(--border-radius);
 }
 
 .description p {
@@ -245,23 +256,80 @@
 .fullWidth {
   display: block;
   width: 100%;
+  max-width: 800px;
+  margin: auto;
+  border: 1px solid lightGrey;
+  box-shadow: 4px 2px 0px grey;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fullWidthCenter {
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+  margin: auto;
+  padding: 5px;
+}
+
+.titleText {
+  border: 0px;
+  margin: 0;
+  padding: 5px;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: "Arial";
+}
+
+.titleTextField {
+    border: 1px solid orange;
+    border-radius: 5px;
+    margin: 0;
+    padding: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: "Arial";
+}
+
+.textFieldEdit {
+
+}
+
+.details {
+  background: white
 }
 
 .ingredientDisp {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid black;
   padding: 5px;
   width: 100%;
 }
 
-.drag {
-padding: 5px 10px;
-cursor: pointer;
-background: grey;
-border: 1px solid lightgrey;
+.ingredientDisp {
+  background: white;
+  border-bottom: 1px solid lightGrey;
 }
+
+.ingredientDisp:nth-child(even) {
+  background: lightyellow;
+}
+
+
+
+.drag {
+    padding: 4px;
+    margin: 1px;
+    color: white;
+    text-align: center;
+    min-width: 25px;
+    background: #F4991A;
+    border-radius: 5px;
+}
+
+
 
 .servingsCounter {
   display: flex;
@@ -274,8 +342,12 @@ border: 1px solid lightgrey;
 }
 
 .servingsCounter .btn {
-  margin: 2px;
-  color: white;
+    padding: 2px;
+    margin: 5px;
+    color: white;
+    text-align: center;
+    min-width: 25px;
+    background: #F4991A;
 }
 
 .servingsCounter input {
@@ -287,31 +359,95 @@ border: 1px solid lightgrey;
 
 .btn {
   width: fit-content;
-  background: grey;
+  background: #F4991A;
+  color: white;
+  text-shadow: 1px 1px 1px grey;
   padding: 5px 10px;
-  marging: 2px;
-  border: 1px solid black;
+  margin: 2px;
   border-radius: 5px;
   cursor: pointer;
+  z-index: 5;
 }
+
+/*
+  <div className={styles.quickModalWrap} >
+    <div className={styles.quickModalHeader}>
+      <h1>props.title</h1>
+    </div>
+    <div className={styles.quickModalCont} >
+      {props.showComponent}*/
 
 
 /*QuickModal*/
 .quickModalWrap{
   display: block;
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   left: 0;
-  right:0;
-  top:0;
-  bottom:0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 100;
 }
 
 .quickModalCont {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 50px;
+    background: white;
+    max-width: 75%;
+    max-height: 75%;
+    padding: 9px;
+    margin: auto;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.quickModalHeader {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    height: 50px;
+    width: 100%;
+}
+
+.quickModalBlur {
   display: block;
-  position: relative;
-  background: white;
-  max-width: 75%;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  /*backdrop-filter: blur(2px);*/
+}
+
+.quickModalTitle {
+  flex-grow: 1;
+}
+
+.quickModalClose {
+  width: 50px;
+  height: 100%;
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.quickModalBody {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.bottomArea {
+  text-align: center;
   margin: auto;
+  justify-content: center;
+  display: flex;
 }

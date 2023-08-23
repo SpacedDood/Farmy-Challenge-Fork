@@ -1,7 +1,10 @@
+'use client'
 import Image from 'next/image'
 import styles from './page.module.css'
+import { useState, useEffect } from 'react'
 
 export default function Home() {
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -29,6 +32,7 @@ export default function Home() {
 
       <div className={styles.center}>
         <a
+          className={styles.mainButton}
           href="/salad-maker"
           rel="noopener noreferrer"
         >
@@ -36,59 +40,9 @@ export default function Home() {
         </a>
       </div>
 
+      <SaladList />
+
       <div className={styles.grid}>
-        {/*
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-        */
-        }
 
         <a
           href="/api/businessLogic"
@@ -161,5 +115,47 @@ export default function Home() {
         </a>
       </div>
     </main>
+  )
+}
+
+const SaladList = (props) => {
+
+  const [loading, setLoading] = useState(true)
+  const [loadedData, setLoadedData] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/salads/')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setLoadedData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error)
+        setError(true);
+        setLoading(false);
+      });
+  }, []);
+
+
+  if (loading)
+      return (<div className={styles.loading}>Loading...</div>)
+
+  return (
+    <div className={styles.saladsList}>
+      {loadedData.map((salad) => {
+        return (
+          <div className={styles.flexbetween}>
+            <p>{salad.name}</p>
+            <a className={styles.btn} href={"/salad-maker/" + salad.id}>Edit</a>
+          </div>
+        )
+      })}
+    </div>
   )
 }

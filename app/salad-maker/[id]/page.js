@@ -19,15 +19,16 @@ export const SaladMakerLoaderPage = ({params}, props) => {
       })
       .then((data) => {
         setLoadedData(data);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error)
-        setError(true)
+        setError(true);
+        setLoading(false);
       });
   }, []);
 
   return (
-
     <main className={styles.main}>
       <div className={styles.description}>
         <a href="/">Home</a>
@@ -35,9 +36,14 @@ export const SaladMakerLoaderPage = ({params}, props) => {
 
       {error ? <p>Issues loading salad! Sorry :( </p> : null}
 
-      <SaladMaker
-        saladData={loadedData ? loadedData : null}
-      />
+
+      {loading ?
+        (<div className={styles.loading}>Loading Salads...</div>)
+        :
+        (<SaladMaker
+          loadedData={loadedData ? loadedData : null}
+        />)
+      }
 
     </main>
 

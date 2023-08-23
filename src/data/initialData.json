@@ -332,7 +332,7 @@
     {
       "name": "Example Salad",
       "id": 1,
-      "size": "small",
+      "size": "medium",
       "ingredients": [
         {
           "id": 1,
