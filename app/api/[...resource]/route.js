@@ -36,7 +36,7 @@ export async function POST(request, {params}) {
 
 const getData = async (resource) => {
   return await new Promise(async (resolve, reject) => {
-    let savedDataContent = await fs.readFile('./src/data/savedData.json', 'utf-8');
+    let savedDataContent = await fs.readFile('./public/data/savedData.json', 'utf-8');
 
     let savedData = JSON.parse(savedDataContent);
 
@@ -45,7 +45,7 @@ const getData = async (resource) => {
     //console.log(firstLoad)
     const dataContent = firstLoad
     ? savedDataContent
-    : await fs.readFile('./src/data/initialData.json', 'utf-8');
+    : await fs.readFile('./public/data/initialData.json', 'utf-8');
     const data = JSON.parse(dataContent);
 
     //console.log("data", data)
@@ -111,15 +111,15 @@ const saveData = async (resource, data) => {
   //console.log("Final!")
 
   // Write
-  await writeFile('./src/data/savedData.json', JSON.stringify(newData, null, "\t"));
+  await writeFile('./public/data/savedData.json', JSON.stringify(newData, null, "\t"));
   //console.log("saved?")
 };
 
 const saveDataCopy = async (data) => {
   //console.log("saveData",data.length)
-  await writeFile('./src/data/savedData.json', JSON.stringify(data, null, "\t"));
+  await writeFile('./public/data/savedData.json', JSON.stringify(data, null, "\t"));
 }
 
 const resetSavedData = async () => {
-  await writeFile(`./src/data/savedData.json`, JSON.stringify({}));
+  await writeFile(`./public/data/savedData.json`, JSON.stringify({}));
 }

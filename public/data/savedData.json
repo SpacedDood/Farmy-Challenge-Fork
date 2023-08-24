@@ -426,16 +426,16 @@
 		},
 		{
 			"id": 6,
-			"name": "Best Salad Ever!",
-			"size": "small",
+			"name": "Best Salad Ever Tested!",
+			"size": "large",
 			"ingredients": [
 				{
 					"id": 5,
 					"numOfServings": "4"
 				},
 				{
-					"id": 5,
-					"numOfServings": "2"
+					"id": 7,
+					"numOfServings": "9"
 				},
 				{
 					"id": 5,
@@ -446,8 +446,8 @@
 					"numOfServings": "6"
 				},
 				{
-					"id": 7,
-					"numOfServings": "9"
+					"id": 5,
+					"numOfServings": "2"
 				}
 			],
 			"cost": "5.70",
