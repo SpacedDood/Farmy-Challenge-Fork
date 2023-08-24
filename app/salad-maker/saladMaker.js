@@ -1,5 +1,6 @@
 import styles from './page.module.css'
 import { useState, useEffect, useRef } from 'react'
+import DragAndDropList from "./globalComponents/dragAndDropList"
 
 export const SaladMaker = (props) => {
 
@@ -71,7 +72,7 @@ export const SaladMaker = (props) => {
     newSaladData.ingredients.forEach((item, i) => {
       //console.log(item.id)
       //console.log(ingreData)
-      let ingredientData = ingreData.find((ingredient) => ingredient.id == item.id);
+      let ingredientData = {...ingreData.find((ingredient) => ingredient.id == item.id)};
       ingredientData.count = item.numOfServings;
       newSalad.ingredients.push(ingredientData);
     });
@@ -168,8 +169,16 @@ export const SaladMaker = (props) => {
 
   function updateIngredientCount(ingrePos, ingreValue) {
     let newSalad = {...saladData};
-    console.log(newSalad["ingredients"]);
     newSalad["ingredients"][ingrePos].count = ingreValue;
+    setSaladData(newSalad);
+    return true;
+  }
+
+  function updateIngredientsArray(ingredientsArray) {
+    console.log("INGREDIENTS UPDATED!")
+    let newSalad = {...saladData};
+    console.log(ingredientsArray)
+    newSalad["ingredients"] = ingredientsArray;
     setSaladData(newSalad);
     return true;
   }
@@ -235,20 +244,33 @@ export const SaladMaker = (props) => {
             </div>
           )
           :
-          (saladData["ingredients"].map((item, i)=>{
+          <DragAndDropList
+            arrayToDisplay={saladData["ingredients"]}
+            ItemElementDisplay={SaladIngredient}
+            additionalElementProps={{
+              removeIngredient:removeIngredientSalad,
+              updateIngredientCount:updateIngredientCount
+            }}
+            saveArrayData={updateIngredientsArray}
+          />
+
+          /*(saladData["ingredients"].map((item, i)=>{
             return (
               <SaladIngredient
                 className={styles.ingredientEle}
                 key={i}
-                ingreNo={i}
-                ingredient={item}
+                itemNo={i}
+                item={item}
                 removeIngredient={removeIngredientSalad}
                 updateIngredientCount={updateIngredientCount}
               />
             );
-          }))
+          }))*/
         }
         </div>
+
+        {/*
+        */}
 
         <div className={styles.fullWidthCenter}>
           <div
@@ -286,6 +308,7 @@ export const SaladMaker = (props) => {
       <div className={styles.bottomArea}>
         <div className={styles.btn} onClick={() => saveSaladData()}>Save</div>
       </div>
+
     </div>
   )
 }
@@ -373,28 +396,28 @@ const SaladIngredient = (props) => {
 
   function setCount(value) {
     if (value <= -1) {
-      props.removeIngredient(props.ingreNo)
+      props.removeIngredient(props.itemNo)
     } else {
-      props.updateIngredientCount(props.ingreNo, value);
+      props.updateIngredientCount(props.itemNo, value);
     }
   }
 
   return (
     <div className={styles.ingredientDisp}>
       <div className={styles.drag}>:</div>
-      <p>{props.ingredient.name}</p>
+      <p>{props.item.name}</p>
 
       <div className={styles.flex}>
         <Counter
           labelText={"Servings:"}
           className={styles.servingsCounter}
-          count={props.ingredient.count}
+          count={props.item.count}
           setCount={setCount}/>
       </div>
 
-      <p>{(props.ingredient.count * props.ingredient.costPerServing).toFixed(2)}€</p>
-      <p>{(props.ingredient.count * props.ingredient.weightPerServing)}g</p>
-      <div onClick={() => props.removeIngredient(props.ingreNo)}>Trash</div>
+      <p>{(props.item.count * props.item.costPerServing).toFixed(2)}€</p>
+      <p>{(props.item.count * props.item.weightPerServing)}g</p>
+      <div onClick={() => props.removeIngredient(props.itemNo)}>Trash</div>
     </div>
   )
 }

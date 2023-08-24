@@ -351,14 +351,14 @@
 			"ingredients": [
 				{
 					"id": 4,
-					"numOfServings": 3
+					"numOfServings": 4
 				},
 				{
 					"id": 3,
 					"numOfServings": 2
 				}
 			],
-			"cost": "1.60",
+			"cost": "1.80",
 			"targetStock": 0,
 			"currentStock": 0,
 			"price": 0
@@ -397,6 +397,60 @@
 				}
 			],
 			"cost": "1.45",
+			"targetStock": 0,
+			"currentStock": 0,
+			"price": 0
+		},
+		{
+			"id": 5,
+			"name": "Amazing!",
+			"size": "medium",
+			"ingredients": [
+				{
+					"id": 5,
+					"numOfServings": 1
+				},
+				{
+					"id": 7,
+					"numOfServings": 1
+				},
+				{
+					"id": 9,
+					"numOfServings": 1
+				}
+			],
+			"cost": "0.80",
+			"targetStock": 0,
+			"currentStock": 0,
+			"price": 0
+		},
+		{
+			"id": 6,
+			"name": "Best Salad Ever!",
+			"size": "small",
+			"ingredients": [
+				{
+					"id": 5,
+					"numOfServings": "4"
+				},
+				{
+					"id": 5,
+					"numOfServings": "2"
+				},
+				{
+					"id": 5,
+					"numOfServings": "0"
+				},
+				{
+					"id": 8,
+					"numOfServings": "6"
+				},
+				{
+					"id": 7,
+					"numOfServings": "9"
+				}
+			],
+			"cost": "5.70",
 			"targetStock": 0,
 			"currentStock": 0,
 			"price": 0

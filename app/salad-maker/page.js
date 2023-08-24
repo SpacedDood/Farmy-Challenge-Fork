@@ -3,6 +3,7 @@ import styles from './page.module.css'
 import { useState, useEffect, useRef } from 'react'
 import SaladMaker from "./saladMaker";
 
+
 // Main code here.
 export const SaladMakerPage = (params) => {
 
@@ -12,6 +13,7 @@ export const SaladMakerPage = (params) => {
         <a href="/">Home</a>
       </div>
       <SaladMaker />
+
     </main>
   )
 
